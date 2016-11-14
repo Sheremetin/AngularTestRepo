@@ -7,34 +7,28 @@
     LunchCheckController.$inject = ['$scope'];
 
     function LunchCheckController($scope) {
-        $scope.dishes = ' ';
 
-        $scope.message = ' ';
+        $scope.dishes = "";
+        $scope.message = "";
+        $scope.checking = function () {
+            var list = $scope.dishes.split(',');
 
-        $scope.checkDishes = function(){
-            var message = $scope.dishes;
+            list.forEach(function(item, i){
+                console.log(list[i].length);
+            });
 
-            var arrDishes = message.split(',');
-            var number = arrDishes.length;
+            if (list== ''){
+                $scope.message = "Please enter data first";
 
-            var emptyInput = +document.getElementById('lunch-menu').value;
-
-            showAppropriateMessage(number);
-
-            function showAppropriateMessage(number) {
-
-             if(emptyInput ==0){
-                 $scope.message = 'Please enter data first!';
-                 return
-             }
-
-             if (number <= 3) {
-                    $scope.message = 'Enjoy!!!'
-                } else {
-                    $scope.message = 'Too much!'
-                }
+            }
+            else if (list.length <= 3){
+                $scope.message = "Enjoy!";
+            } else{
+                $scope.message = "Too much!";
             }
         };
+
     }
 
 })();
+
