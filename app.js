@@ -1,32 +1,96 @@
 (function(){
     'use strict';
 
-    angular.module('LunchCheck', [])
-        .controller('LunchCheckController', LunchCheckController);
+    angular.module('ShoppingListCheckOff', [])
+        .controller('ToBuyController', ToBuyController)
+        .controller('AlreadyBoughtController', AlreadyBoughtController)
+        .service('ShoppingListCheckOffService', ShoppingListCheckOffService);
 
-    LunchCheckController.$inject = ['$scope'];
 
-    function LunchCheckController($scope) {
-        $scope.dishes = "";
-        $scope.message = "";
-        $scope.checking = function () {
-            var list = $scope.dishes.split(',');
+        ToBuyController.$inject = ['ShoppingListCheckOffService'];
 
-            list.forEach(function(item, i){
-                console.log(list[i].length);
-            });
+        function ToBuyController(ShoppingListCheckOffService) {
+            var buyCtrl = this;
 
-            if (list== ''){
-                $scope.message = "Please enter data first";
+            buyCtrl.itemsBuy = ShoppingListCheckOffService.getItems();
 
+            buyCtrl.removeItem = function (itemIndex) {
+                try {
+                    ShoppingListCheckOffService.removeItem(itemIndex);
+                } catch (error) {
+                    buyCtrl.errorMessage = error.message;
+                }
+            };
+        }
+
+
+        AlreadyBoughtController.$inject = ['ShoppingListCheckOffService'];
+
+        function AlreadyBoughtController(ShoppingListCheckOffService) {
+            var alreadyBuyCtrl = this;
+
+            alreadyBuyCtrl.errorMessage = true;
+
+            alreadyBuyCtrl.itemsBought = ShoppingListCheckOffService.getItemsBought();
+            //console.log(alreadyBuyCtrl.itemsBought.length);
+            if(alreadyBuyCtrl.itemsBought.length > 0){
+                alreadyBuyCtrl.errorMessage = false;
             }
-            else if (list.length <= 3){
-                $scope.message = "Enjoy!";
-            } else{
-                $scope.message = "Too much!";
-            }
-        };
-    }
+        }
+
+        function ShoppingListCheckOffService() {
+
+            var service = this;
+
+            var itemsBuy = [
+                {
+                    name: "cookies",
+                    quantity: 10
+                },
+                {
+                    name: "apple",
+                    quantity: 5
+                },
+                {
+                    name: "pear",
+                    quantity: 7
+                },
+                {
+                    name: "melon",
+                    quantity: 2
+                },
+                {
+                    name: "orange",
+                    quantity: 10
+                }
+            ];
+
+            var itemsBought = [];
+
+            service.removeItem = function (itemIndex) {
+
+                itemsBought.push(itemsBuy[itemIndex]);
+                
+                itemsBuy.splice(itemIndex, 1);
+
+                if(itemsBuy.length == 0){
+                    throw new Error('error');
+                }
+            };
+
+            service.getItems = function () {
+                return itemsBuy;
+            };
+
+            service.getItemsBought = function () {
+                if (itemsBought.length !== 0) {
+                    throw new Error('error');
+                }
+                console.log(itemsBought.length);
+                return itemsBought;
+
+            };
+        }
 
 })();
 
