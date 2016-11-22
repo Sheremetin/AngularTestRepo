@@ -1,32 +1,90 @@
-(function(){
+(function () {
     'use strict';
 
-    angular.module('LunchCheck', [])
-        .controller('LunchCheckController', LunchCheckController);
+    angular.module('ShoppingListCheckOff', [])
+        .controller('ToBuyController', ToBuyController)
+        .controller('AlreadyBoughtController', AlreadyBoughtController)
+        .service('ShoppingListCheckOffService', ShoppingListCheckOffService);
 
-    LunchCheckController.$inject = ['$scope'];
+    /**
+     * Controller1
+     * @type {string[]}
+     */
+    ToBuyController.$inject = ['ShoppingListCheckOffService'];
 
-    function LunchCheckController($scope) {
-        $scope.dishes = "";
-        $scope.message = "";
-        $scope.checking = function () {
-            var list = $scope.dishes.split(',');
+    function ToBuyController(ShoppingListCheckOffService) {
+        var buyCtrl = this;
 
-            list.forEach(function(item, i){
-                console.log(list[i].length);
-            });
+        buyCtrl.itemsBuy = ShoppingListCheckOffService.getItems();
 
-            if (list== ''){
-                $scope.message = "Please enter data first";
+        buyCtrl.removeItem = function (itemIndex) {
+            ShoppingListCheckOffService.removeItem(itemIndex);
+        }
+    }
 
+    /**
+     * Controller 2
+     * @type {string[]}
+     */
+
+    AlreadyBoughtController.$inject = ['ShoppingListCheckOffService'];
+
+    function AlreadyBoughtController(ShoppingListCheckOffService) {
+        var alreadyBuyCtrl = this;
+        alreadyBuyCtrl.itemsBought = ShoppingListCheckOffService.getItemsBought();
+    }
+
+    /**
+     * Service
+     * @constructor
+     */
+
+    function ShoppingListCheckOffService() {
+
+        var service = this;
+
+        var itemsBuy = [
+            {
+                name: "cookies",
+                quantity: 10
+            },
+            {
+                name: "apple",
+                quantity: 5
+            },
+            {
+                name: "pear",
+                quantity: 7
+            },
+            {
+                name: "melon",
+                quantity: 2
+            },
+            {
+                name: "orange",
+                quantity: 10
             }
-            else if (list.length <= 3){
-                $scope.message = "Enjoy!";
-            } else{
-                $scope.message = "Too much!";
-            }
+        ];
+
+        var itemsBought = [];
+
+        service.getItems = function () {
+            return itemsBuy;
+        };
+
+        service.getItemsBought = function () {
+            return itemsBought;
+        };
+
+        service.removeItem = function (itemIndex) {
+
+            itemsBought.push(itemsBuy[itemIndex]);
+
+            itemsBuy.splice(itemIndex, 1);
+
         };
     }
 
 })();
+
 
